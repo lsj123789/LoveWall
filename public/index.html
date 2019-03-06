@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>loveWall</title>
+</head>
+<style>
+    *{
+        padding: 0;
+        margin: 0;
+    }
+    #app{
+        background-image: url(1.png);
+        background-repeat: no-repeat;
+    }
+    .title-con {
+        text-align: center;
+        font-family: '隶书';
+        font-size: 40px;
+        font-weight: bold;
+        color: indianred;
+        margin-bottom: 5px;
+    }
+
+    .head-con {
+        background-color: rgba(226, 207, 100, 0.5);
+        display: flex;
+        justify-content: space-around;
+        line-height: 25px;
+        outline: none;
+        border-radius: 10px;
+        color: indianred;
+        margin-bottom: 15px;
+        margin-left:5px;
+        margin-right: 5px;
+    }
+    .search-con,
+     .content-con{
+        padding:10px 5px;
+        box-sizing: border-box;
+        background-color: rgba(166,152,255, 0.5);
+    }
+    /* .search-self, */
+    .input-self{
+        border-radius: 10px;
+        outline: none;
+        width:100%;
+        padding-left:5px;
+        line-height: 30px;
+        background-color: rgba(226, 207, 100, 0.5);
+        color: indianred;
+    }
+
+    .button-con{
+        margin:8px 5px;
+        line-height: 25px;
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .nickname-con{
+        width: 19%;
+        outline: none;
+        color: indianred;
+        margin: 1px;
+    }
+
+    .boxBefore{
+        background-color: rgba(226, 207, 100, 0.1);
+    }
+    .boxAfter{
+        background-color:white;
+    }
+    .show-con{
+        height: 60px;
+        background-color: rgba(226, 207, 100, 0.5);
+        margin: 10px 5px;
+        border:1px solid gray;
+        border-radius: 8px;
+        padding-left: 5px;
+        color: indianred;
+    }
+
+    .nav-con{
+        width: 25%;
+        box-sizing: border-box;
+        text-align: center;
+    }
+    /* .nav{
+        color: indianred;
+        font-size: 20px;
+        font-weight: bold;
+    } */
+    /* .sousuo{
+        width: 30%;
+        border-radius: 10px;
+        outline: none;
+        background-color: rgba(226, 207, 100, 0.5);
+        margin-left: 63%;
+        padding-left: 5px;
+        padding-right: 3px;
+        padding-bottom: 5px;
+        text-align: center;
+    } */
+</style>
+
+<body>
+    <div id='app'>
+        <div class='title-con'>neau wall</div>
+        <div class='head-con'>
+            <div class='nav-con' v-bind:class='quanbu_class' v-on:click='quanbu'>全部</div>
+            <div class='nav-con' v-bind:class='biaobai_class' v-on:click='biaobai'>表白</div>
+            <div class='nav-con' v-bind:class='yijv_class' v-on:click='yijv'>一句</div>
+            <div class='nav-con' v-bind:class='tucao_class' v-on:click='tucao'>吐槽</div>
+        </div>
+        <!-- <input type="text" class='sousuo' placeholder="点我搜索" v-on:click='handle()'>
+        <div class='search-con' v-if='unseen'>
+            <input type="text" class='search-self' placeholder='搜索什么呢？' v-model='searchContent'>
+            <button style="margin-left:70%;width:25%" v-on:click='yes'>确定</button>
+        </div> -->
+        <div class='content-con'>
+            <input type="text" class='input-self' placeholder="说点什么呢？" v-model='content'>
+            <div class='button-con'>
+                <select name='text' v-model='kind' class='nickname-con'>
+                    <option value="">请选择</option>
+                    <option value="表白">表白</option>
+                    <option value="一句">一句</option>
+                    <option value="吐槽">吐槽</option>
+                </select>
+
+                <input type="text" placeholder="昵称" class='nickname-con' v-model='name'>
+                <button v-on:click='submit' class='nickname-con'>发布</button>
+            </div>
+        </div>
+        <div class='show-con' v-for='loveWall in loveWallArr'>
+            {{loveWall.kind}} |
+            {{loveWall.name}}
+            {{loveWall.content}}
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                quanbu_class: 'boxAfter',
+                yijv_class: 'boxBefore',
+                tucao_class: 'boxBefore',
+                biaobai_class: 'boxBefore',
+                name: '',
+                kind: '',
+                content: '',
+                // searchContent: '',
+                loveWallArr: [],
+                // seen: true,
+                // unseen: false,
+            },
+            mounted(){
+                this.getloveWall;
+            },
+            methods: {
+                submit: function () {
+                    console.log(this.name);
+                    console.log(this.kind);
+                    console.log(this.content);
+                    axios.post('/loveWall', {//通过lovewall这个路由把下面的数据上传到服务器
+                        name: this.name,
+                        kind: this.kind,
+                        content: this.content,
+                    }).then(function (res) {
+                        console.log(res);
+                    })
+                },
+                // yes: function () {
+                //     console.log(this.searchContent);
+                //     axios.post('/search', {
+                //         searchContent: this.searchContent,
+                //     }).then(function (res) {
+                //         console.log(res);
+                //     })
+                // },
+                // handle: function () {
+                //     if (this.seen = 'ture') {
+                //         this.seen = false;
+                //         this.unseen = true;
+                //     } else {
+                //         this.seen = true;
+                //         this.unseen = false;
+                //     }
+                // },
+                quanbu: function () {
+                    let that = this;
+                    this.quanbu_class = 'boxAfter'
+                    this.biaobai_class = 'boxBefore'
+                    this.yijv_class = 'boxBefore'
+                    this.tucao_class = 'boxBefore'
+                    axios.get('/quanbuloveWall').then(function (res) {
+                        console.log(res.data);
+                        that.loveWallArr = res.data;
+                    })
+                    // getloveWall();
+                },
+                biaobai: function () {
+                    let that2 = this;
+                    this.biaobai_class = 'boxAfter'
+                    this.quanbu_class = 'boxBefore'
+                    this.yijv_class = 'boxBefore'
+                    this.tucao_class = 'boxBefore'
+                    axios.post('/biaobailoveWall', { kind: '表白' }).then(function (res) {
+                        console.log(res.data);
+                        that2.loveWallArr = res.data;
+                    })
+                },
+                yijv: function () {
+                    let that3 = this;
+                    this.yijv_class = 'boxAfter'
+                    this.biaobai_class = 'boxBefore'
+                    this.tucao_class = 'boxBefore'
+                    this.quanbu_class = 'boxBefore'
+                    axios.post('/yijvloveWall', { kind: '一句' }).then(function (res) {
+                        console.log(res.data);
+                        that3.loveWallArr = res.data
+                    })
+                },
+                tucao: function () {
+                    let that4 = this;
+                    this.tucao_class = 'boxAfter'
+                    this.biaobai_class = 'boxBefore'
+                    this.yijv_class = 'boxBefore'
+                    this.quanbu_class = 'boxBefore'
+
+                    axios.post('/tucaoloveWall', { kind: '吐槽' }).then(function (res) {
+                        console.log(res.data);
+                        that4.loveWallArr = res.data;
+                    })
+                }
+            },
+        })
+        function getloveWall() {
+            axios.get('/getloveWall').then(function (response) {//通过getlovewall路由向服务器请求数据
+                console.log(response.data);//打印服务器返回的数据
+                app.loveWallArr = response.data;//把服务器返回的数据传给数组
+            })
+        }
+    </script>
+</body>
+
+</html>
